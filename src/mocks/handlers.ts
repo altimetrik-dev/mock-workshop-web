@@ -6,7 +6,7 @@ export const handlers = [
     await delay();
     return HttpResponse.json(company);
   }),
-  http.put("*/v1/company", async ({ request }) => {
+  http.post("*/v1/company", async ({ request }) => {
     const data = await request.json();
     await delay();
     return HttpResponse.json(data);

@@ -4,17 +4,22 @@ import user from "@testing-library/user-event";
 
 // To Test
 import App from "./App";
+import { MemoryRouter } from "react-router-dom";
+
+const customRender = (ui: React.ReactElement, id: string = "/routeId") => {
+  render(<MemoryRouter initialEntries={[id]}>{ui}</MemoryRouter>);
+};
 
 describe("App", () => {
   it("should renders App component", async () => {
-    render(<App />);
+    customRender(<App />, "/routeId");
     await waitFor(() => {
       const chips = screen.getByText("CL002M");
       expect(chips).toBeInTheDocument();
     });
   });
   it("should add a new ClientID chip", async () => {
-    render(<App />);
+    customRender(<App />, "/routeId");
     const input = await screen.findByLabelText(/client id/i);
     user.type(input, "ClientID{enter}");
 
@@ -23,7 +28,7 @@ describe("App", () => {
   });
 
   it("should remove a ClientID chip", async () => {
-    render(<App />);
+    customRender(<App />, "/routeId");
     const input = await screen.findByLabelText(/client id/i);
     await user.type(input, "ClientID{enter}");
 

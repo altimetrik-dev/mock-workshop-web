@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
 
 async function enableMocking() {
-  console.log(import.meta.env.VITE_USER_MOCK_API);
   if (import.meta.env.VITE_USER_MOCK_API !== "true") {
     console.log("Service Worker is disabled in production mode.");
     return;
@@ -20,7 +20,9 @@ async function enableMocking() {
 enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </React.StrictMode>
   );
 });

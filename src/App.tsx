@@ -1,9 +1,10 @@
 import React from "react";
 import axios from "axios";
+import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { Company, Connection, Response } from "./types/types";
 
 const BASE_API_URL = import.meta.env.VITE_USER_API_URL;
-const COMPANY_ID = "65e9d3a158ce52ceea5ead13";
+const DEFAULT_COMPANY_ID = "65e9d3a158ce52ceea5ead13";
 
 type InputProps = React.HTMLProps<HTMLInputElement> & { label: string };
 
@@ -49,25 +50,38 @@ function Chip(props: ChipProps) {
   );
 }
 
-function App() {
+function EditClient() {
   const [company, setCompany] = React.useState<Response<Company>>();
   const [isBusy, setIsBusy] = React.useState<boolean>(false);
   const clientsRef = React.useRef<HTMLInputElement>(null);
   const msNumbersRef = React.useRef<HTMLInputElement>(null);
   const groupsRef = React.useRef<HTMLInputElement>(null);
+  let { id } = useParams();
+  let navigate = useNavigate();
 
   React.useEffect(() => {
+    const COMPANY_ID = id || DEFAULT_COMPANY_ID;
+    if (!COMPANY_ID) return;
     (async () => {
-      const { data } = await axios.get<Response<Company>>(
-        `${BASE_API_URL}/v1/company/${COMPANY_ID}`
-      );
-      setCompany(data);
+      try {
+        const { data } = await axios.get<Response<Company>>(
+          `${BASE_API_URL}/v1/company/${COMPANY_ID}`
+        );
+        setCompany(data);
+      } catch (error) {
+        console.error(error);
+        navigate("/");
+      }
     })();
 
     // fetch(`${BASE_API_URL}/v1/company/${COMPANY_ID}`)
     //   .then((res) => res.json())
     //   .then((data) => {
     //     setCompany(data);
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //     navigate("/");
     //   });
   }, []);
 
@@ -133,16 +147,20 @@ function App() {
   const onSave = () => {
     setIsBusy(true);
     if (!company) return;
+    const body = JSON.stringify({
+      name: company.data.name,
+      connections: company.data.connections,
+    });
     fetch(`${BASE_API_URL}/v1/company`, {
       headers: {
         "content-type": "application/json;charset=UTF-8",
       },
-      method: "PUT",
-      body: JSON.stringify(company),
+      method: "POST",
+      body,
     })
       .then((res) => res.json())
       .then((data) => {
-        setCompany(data);
+        setCompany(data.data);
       })
       .finally(() => {
         setIsBusy(false);
@@ -264,6 +282,15 @@ function App() {
         </button>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/:id" element={<EditClient />} />
+      <Route path="/" element={<EditClient />} />
+    </Routes>
   );
 }
 

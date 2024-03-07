@@ -8,7 +8,7 @@ export type Response<T = unknown> = {
 };
 
 export type Company = {
-  id: string;
+  id?: string;
   _id?: string;
   name?: string;
   connections?: Connection[];
