@@ -1,105 +1,28 @@
-import {
-  Response,
-  Company,
-  Client,
-  MSNumber,
-  Group,
-  Brand,
-} from "../types/types";
+import { Response, Company } from "../types/types";
 
-export const clients = [
-  {
-    id: "65e8e99d8dd7f19d9cf07bd9",
-    name: "MCD",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd3",
-    name: "ABC",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd4",
-    name: "DUO",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd5",
-    name: "XYZ",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd6",
-    name: "PQR",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd7",
-    name: "LMN",
-  },
-] satisfies Client[];
-
-export const msNumbers = [
-  {
-    id: "65e8e99d8dd7f19d9cf07bd9",
-    name: "MC1234",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd3",
-    name: "MC456",
-  },
-  {
-    id: "65e8e99d8dd7f19d9cf07bd4",
-    name: "MC789",
-  },
-] satisfies MSNumber[];
-
-export const groups = [
-  {
-    id: "6e99d8dd7f19d9cf07bd9",
-    name: "HTC",
-  },
-  {
-    id: "65e8e99d8dd7f9cf07bd3",
-    name: "BMW",
-  },
-  {
-    id: "6e8e99d8dd7f19d9cf07bd4",
-    name: "CON",
-  },
-] satisfies Group[];
-
-export const brands = [
-  {
-    id: "65e8e9f19d9cf07bd9",
-    name: "NOK",
-  },
-  {
-    id: "65e8e99d8dd7f19d93",
-    name: "APPL",
-  },
-  {
-    id: "65e8e99d8dd7f19d",
-    name: "NFLX",
-  },
-] satisfies Brand[];
-
-export const companies = {
+export const company = {
   success: true,
   data: {
-    skip: 1,
-    limit: 1,
-    total: 3,
-    data: {
-      id: "65e8e99d8dd7f19d9cf07bd9",
-      _id: "65e8e99d8dd7f19d9cf07bd9",
-      name: "ACME Corporation",
-      clients,
-      msNumbers,
-      groups,
-      brands,
-      connections: [
-        {
-          reference: "string",
-          type: "CLIENT",
-        },
-      ],
-      __v: 0,
-    },
+    id: "65e9d3a158ce52ceea5ead13",
+    _id: "65e9d3a158ce52ceea5ead13",
+    name: "Acme Corp.",
+    connections: [
+      { reference: "CL001M", type: "CLIENT" },
+      { reference: "CL002M", type: "CLIENT" },
+      { reference: "CL003M", type: "CLIENT" },
+      { reference: "CL004M", type: "CLIENT" },
+      { reference: "CL005M", type: "CLIENT" },
+      { reference: "G0001M", type: "GROUP" },
+      { reference: "G0002M", type: "GROUP" },
+      { reference: "G0003M", type: "GROUP" },
+      { reference: "G0004M", type: "GROUP" },
+      { reference: "G0005M", type: "GROUP" },
+      { reference: "MC001M", type: "MC" },
+      { reference: "MC002M", type: "MC" },
+      { reference: "MC003M", type: "MC" },
+      { reference: "MC004M", type: "MC" },
+      { reference: "G0005M", type: "MC" },
+    ],
+    __v: 0,
   },
 } satisfies Response<Company>;

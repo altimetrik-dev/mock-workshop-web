@@ -1,7 +1,9 @@
 import React from "react";
-import { Client, Company, Response } from "./types/types";
+import axios from "axios";
+import { Company, Connection, Response } from "./types/types";
 
 const BASE_API_URL = import.meta.env.VITE_USER_API_URL;
+const COMPANY_ID = "65e9d3a158ce52ceea5ead13";
 
 type InputProps = React.HTMLProps<HTMLInputElement> & { label: string };
 
@@ -55,67 +57,71 @@ function App() {
   const groupsRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    fetch(`${BASE_API_URL}/v1/company/1`)
-      .then((res) => res.json())
-      .then((data) => {
-        setCompany(data);
-      });
+    (async () => {
+      const { data } = await axios.get<Response<Company>>(
+        `${BASE_API_URL}/v1/company/${COMPANY_ID}`
+      );
+      setCompany(data);
+    })();
+
+    // fetch(`${BASE_API_URL}/v1/company/${COMPANY_ID}`)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setCompany(data);
+    //   });
   }, []);
 
-  const onDelete = (
-    id: string,
-    type: "clients" | "msNumbers" | "groups" | "brands",
-    name?: string
-  ) => {
-    const dataUpdated = company?.data.data[type]?.filter(
-      (item: Client) => item.name !== name || item.id !== id
-    );
+  const onDelete = (referenceParam?: string) => {
+    const dataUpdated = company?.data.connections?.filter(({ reference }) => {
+      return reference !== referenceParam;
+    });
+
     if (!company) return;
     setCompany({
       ...company,
       data: {
         ...company.data,
-        data: {
-          ...company.data.data,
-          [type]: dataUpdated || undefined,
-        },
+        connections: dataUpdated || undefined,
       },
     });
   };
 
   const onAdd = (
     event: React.KeyboardEvent<HTMLInputElement>,
-    type: "clients" | "msNumbers" | "groups"
+    type: "GROUP" | "CLIENT" | "MC"
   ) => {
     if (!company) return;
     if (event.key !== "Enter") return;
     const data = event.currentTarget.value.split(",");
 
-    const dataUpdated = company?.data.data[type]?.concat(
-      data.map((name) => ({ name }))
-    );
+    const connections = data.map((item) => {
+      return {
+        reference: item,
+        type: type.toUpperCase(),
+      };
+    }) as Connection[];
+
+    if (!company.data.connections) return;
     setCompany({
       ...company,
       data: {
         ...company.data,
-        data: {
-          ...company.data.data,
-          [type]: dataUpdated || undefined,
-        },
+        connections: [...company?.data?.connections, ...connections],
       },
     });
+
     const mapInputsCallacks = {
-      clients: () => {
+      CLIENT: () => {
         clientsRef.current?.focus();
         if (!clientsRef.current) return;
         clientsRef.current.value = "";
       },
-      msNumbers: () => {
+      MC: () => {
         msNumbersRef.current?.focus();
         if (!msNumbersRef.current) return;
         msNumbersRef.current.value = "";
       },
-      groups: () => {
+      GROUP: () => {
         groupsRef.current?.focus();
         if (!groupsRef.current) return;
         groupsRef.current.value = "";
@@ -153,7 +159,7 @@ function App() {
             id="name-of-the-legal-entity"
             placeholder="Enter the name of the legal entity"
             label="Name of the legal entity"
-            defaultValue={company?.data.data.name}
+            defaultValue={company?.data.name}
           />
           <div className="flex flex-row gap-2 mt-2">
             <div className="flex flex-col w-1/2">
@@ -163,20 +169,24 @@ function App() {
                 placeholder="Enter the clients IDs"
                 ref={clientsRef}
                 onKeyDown={(e) => {
-                  onAdd(e, "clients");
+                  onAdd(e, "CLIENT");
                 }}
               />
               <div className="flex flex-row mt-2 gap-2 w-full flex-wrap">
                 {company &&
-                  company?.data.data?.clients?.map(({ name, id }) => {
-                    return (
-                      <Chip
-                        key={name}
-                        label={name}
-                        onDelete={() => onDelete(id!, "clients", name)}
-                      />
-                    );
-                  })}
+                  company?.data?.connections
+                    ?.filter((con) => con.type === "CLIENT")
+                    ?.map(({ reference }) => {
+                      return (
+                        <Chip
+                          key={reference}
+                          label={reference}
+                          onDelete={() => {
+                            onDelete(reference);
+                          }}
+                        />
+                      );
+                    })}
               </div>
             </div>
             <div className="flex flex-col  w-1/2">
@@ -186,20 +196,24 @@ function App() {
                 placeholder="Enter the MC Numbers"
                 ref={msNumbersRef}
                 onKeyDown={(e) => {
-                  onAdd(e, "msNumbers");
+                  onAdd(e, "MC");
                 }}
               />
               <div className="flex flex-row mt-2 gap-2 w-full flex-wrap">
                 {company &&
-                  company?.data.data?.msNumbers?.map(({ name, id }) => {
-                    return (
-                      <Chip
-                        key={name}
-                        label={name}
-                        onDelete={() => onDelete(id!, "msNumbers", name)}
-                      />
-                    );
-                  })}
+                  company?.data?.connections
+                    ?.filter((con) => con.type === "MC")
+                    ?.map(({ reference }) => {
+                      return (
+                        <Chip
+                          key={reference}
+                          label={reference}
+                          onDelete={() => {
+                            onDelete(reference);
+                          }}
+                        />
+                      );
+                    })}
               </div>
             </div>
           </div>
@@ -211,20 +225,24 @@ function App() {
                 placeholder="Enter the group IDs"
                 ref={groupsRef}
                 onKeyDown={(e) => {
-                  onAdd(e, "groups");
+                  onAdd(e, "GROUP");
                 }}
               />
               <div className="flex flex-row mt-2 gap-2 w-full flex-wrap">
                 {company &&
-                  company?.data.data?.groups?.map(({ name, id }) => {
-                    return (
-                      <Chip
-                        key={name}
-                        label={name}
-                        onDelete={() => onDelete(id!, "groups", name)}
-                      />
-                    );
-                  })}
+                  company?.data?.connections
+                    ?.filter((con) => con.type === "GROUP")
+                    ?.map(({ reference }) => {
+                      return (
+                        <Chip
+                          key={reference}
+                          label={reference}
+                          onDelete={() => {
+                            onDelete(reference);
+                          }}
+                        />
+                      );
+                    })}
               </div>
             </div>
             <div className="flex flex-col w-full">

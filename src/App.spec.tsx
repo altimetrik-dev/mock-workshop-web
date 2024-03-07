@@ -9,7 +9,7 @@ describe("App", () => {
   it("should renders App component", async () => {
     render(<App />);
     await waitFor(() => {
-      const chips = screen.getByText("MCD");
+      const chips = screen.getByText("CL002M");
       expect(chips).toBeInTheDocument();
     });
   });
