@@ -1,6 +1,8 @@
 import React from "react";
 import { Client, Company, Response } from "./types/types";
 
+const BASE_API_URL = import.meta.env.VITE_USER_API_URL;
+
 type InputProps = React.HTMLProps<HTMLInputElement> & { label: string };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -53,7 +55,7 @@ function App() {
   const groupsRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    fetch("/v1/company/1")
+    fetch(`${BASE_API_URL}/v1/company/1`)
       .then((res) => res.json())
       .then((data) => {
         setCompany(data);
@@ -125,7 +127,7 @@ function App() {
   const onSave = () => {
     setIsBusy(true);
     if (!company) return;
-    fetch("/v1/company", {
+    fetch(`${BASE_API_URL}/v1/company`, {
       headers: {
         "content-type": "application/json;charset=UTF-8",
       },

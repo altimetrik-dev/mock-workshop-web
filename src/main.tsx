@@ -4,7 +4,9 @@ import App from "./App.tsx";
 import "./index.css";
 
 async function enableMocking() {
-  if (process.env.NODE_ENV !== "development") {
+  console.log(import.meta.env.VITE_USER_MOCK_API);
+  if (import.meta.env.VITE_USER_MOCK_API !== "true") {
+    console.log("Service Worker is disabled in production mode.");
     return;
   }
 
