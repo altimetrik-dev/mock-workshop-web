@@ -19,3 +19,9 @@ npm install
 ```shell
 npm run dev
 ```
+
+## References
+
+- [MSW](https://mswjs.io/)
+- [vite](https://vitejs.dev/)
+- [vitest](https://vitest.dev/)
